@@ -20,5 +20,6 @@ Route::get('/', function () {
 
 Route::controller(ProjectsController::class)->group(function () {
     Route::get('/projects', 'index');
+    Route::get('/projects/{project}', 'show');
     Route::post('/projects', 'store');
 });
