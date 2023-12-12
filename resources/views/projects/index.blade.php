@@ -1,22 +1,24 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-<h1>Project Pulse</h1>
-<ul>
-    @forelse($projects as $project)
-        <li>
-            <a href="{{ $project->path() }}">{{ $project->title }}</a>
-        </li>
-    @empty
-        <li>No projects yet</li>
-    @endforelse
-</ul>
-</body>
-</html>
+<x-app-layout>
+    <x-slot name="header">
+       <div class="flex items-center">
+           <h2 class="mr-auto font-semibold text-xl text-gray-800 leading-tight">
+               Projects
+           </h2>
+           <x-primary-link href="/projects/create">New Project</x-primary-link>
+       </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <ul>
+                @forelse($projects as $project)
+                    <li>
+                        <a href="{{ $project->path() }}">{{ $project->title }}</a>
+                    </li>
+                @empty
+                    <li>No projects yet</li>
+                @endforelse
+            </ul>
+        </div>
+    </div>
+</x-app-layout>
