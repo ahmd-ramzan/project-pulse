@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\ProjectTasksController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,6 +33,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/projects/{project}', 'show');
         Route::post('/projects', 'store');
     });
+
+    # project tasks
+    Route::post('/projects/{project}/tasks', [ProjectTasksController::class, 'store']);
+    Route::patch('/projects/{project}/tasks/{task}', [ProjectTasksController::class, 'update']);
 });
 
 Route::get('/dashboard', function () {
