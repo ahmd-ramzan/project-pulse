@@ -30,9 +30,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::controller(ProjectsController::class)->group(function () {
         Route::get('/projects', 'index');
         Route::get('/projects/create', 'create');
+        Route::get('/projects/{project}/edit', 'edit');
         Route::get('/projects/{project}', 'show');
         Route::post('/projects', 'store');
-       // Route::patch('/projects', 'update');
+        Route::patch('/projects/{project}', 'update');
     });
 
     # project tasks

@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 
 class ProjectsController extends Controller
 {
@@ -18,28 +22,30 @@ class ProjectsController extends Controller
         return view('projects.create');
     }
 
+    public function edit(Project $project)
+    {
+        return view('projects.edit', compact('project'));
+    }
+
+    /**
+     * @return Application|\Illuminate\Foundation\Application|RedirectResponse|Redirector
+     */
     public function store()
     {
-        $project = auth()->user()->projects()->create(request()->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'notes' => 'min:3',
-        ]));
+        $project = auth()->user()->projects()->create($this->validateRequest());
 
         return redirect($project->path());
     }
 
+    /**
+     * @param Project $project
+     * @return Application|\Illuminate\Foundation\Application|RedirectResponse|Redirector
+     */
     public function update(Project $project)
     {
         $this->authorize('update', $project);
 
-        if (auth()->user()->isNot($project->owner)) {
-            abort(403);
-        }
-
-        $project->update([
-            'notes' => request('notes')
-        ]);
+        $project->update($this->validateRequest());
 
         return redirect($project->path());
     }
@@ -49,5 +55,17 @@ class ProjectsController extends Controller
         $this->authorize('update', $project);
 
         return view('projects.show', compact('project'));
+    }
+
+    /**
+     * @return array
+     */
+    public function validateRequest()
+    {
+        return request()->validate([
+            'title' => 'sometimes|required',
+            'description' => 'sometimes|required',
+            'notes' => 'nullable',
+        ]);
     }
 }
