@@ -7,7 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\Setup\ProjectFactory;
+use Facades\Tests\Setup\ProjectFactory;
 use Tests\TestCase;
 
 class ProjectsTaskTest extends TestCase
@@ -17,7 +17,7 @@ class ProjectsTaskTest extends TestCase
     /** @test */
     public function a_project_can_have_tasks()
     {
-        $project = app(ProjectFactory::class)->create();
+        $project = ProjectFactory::create();
 
         $this->actingAs($project->owner)
             ->post($project->path().'/tasks', ['body' => 'Test task']);
@@ -26,20 +26,30 @@ class ProjectsTaskTest extends TestCase
     }
 
     /** @test */
-    public function a_task_can_be_updated()
+    function a_task_can_be_updated()
     {
-        $this->signIn();
+        $project = ProjectFactory::withTasks(1)->create();
 
-        $project = auth()->user()->projects()->create(
-            Project::factory()->raw()
-        );
+        $this->actingAs($project->owner)
+            ->patch($project->tasks[0]->path(), [
+                'body' => 'changed'
+            ]);
 
-        $task = $project->addTask('test task');
-
-        $this->patch($project->path().'/tasks/'.$task->id, [
-            'body' => 'changed',
-            'completed' => 1
+        $this->assertDatabaseHas('tasks', [
+            'body' => 'changed'
         ]);
+    }
+
+    /** @test */
+    function a_task_can_be_completed()
+    {
+        $project = ProjectFactory::withTasks(1)->create();
+
+        $this->actingAs($project->owner)
+            ->patch($project->tasks[0]->path(), [
+                'body' => 'changed',
+                'completed' => true
+            ]);
 
         $this->assertDatabaseHas('tasks', [
             'body' => 'changed',
@@ -64,7 +74,7 @@ class ProjectsTaskTest extends TestCase
     {
         $this->signIn();
 
-        $project = app(ProjectFactory::class)->withTasks(1)->create();
+        $project = ProjectFactory::withTasks(1)->create();
 
         $this->patch($project->tasks->first()->path(), ['body' => 'changed'])
             ->assertStatus(403);
@@ -77,7 +87,7 @@ class ProjectsTaskTest extends TestCase
     /** @test */
     public function a_task_requires_a_body()
     {
-        $project = app(ProjectFactory::class)->create();
+        $project = ProjectFactory::create();
 
         $attributes = Task::factory()->raw(['body' => '']);
 
