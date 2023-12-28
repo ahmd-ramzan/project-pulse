@@ -6,12 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Arr;
 
 class Project extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
+
+    public $old = [];
 
     public function path()
     {
@@ -24,7 +28,23 @@ class Project extends Model
      */
     public function recordActivity($description): void
     {
-        $this->activity()->create(compact('description'));
+        $this->activity()->create([
+            'description' => $description,
+            'changes' => $this->activityChanges($description)
+        ]);
+    }
+
+    /**
+     * Fetch the changes to the model.
+     */
+    protected function activityChanges(string $description)
+    {
+        if ($description == 'updated') {
+            return [
+                'before' => Arr::except(array_diff($this->old, $this->getAttributes()), ['updated_at']),
+                'after' => Arr::except($this->getChanges(), ['updated_at'])
+            ];
+        }
     }
 
     public function owner(): BelongsTo
@@ -39,7 +59,7 @@ class Project extends Model
 
     public function activity(): HasMany
     {
-        return $this->hasMany(Activity::class);
+        return $this->hasMany(Activity::class)->latest();
     }
 
     public function addTask($body)

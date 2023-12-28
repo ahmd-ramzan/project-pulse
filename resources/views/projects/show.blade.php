@@ -25,6 +25,7 @@
                                         <x-text-input name="body" value="{{ $task->body }}"
                                                       class="w-full {{ $task->completed ? 'border-l-4 border-green-400' : 'border-l-4 border-red-400' }}"/>
                                         <input name="completed" type="checkbox"
+                                               class="mx-2"
                                                onChange="this.form.submit()" {{ $task->completed ? 'checked' : '' }}>
                                     </div>
                                 </form>
@@ -54,6 +55,7 @@
                 <div class="lg:w-1/4 px-3">
                     @include('projects.card')
                     <x-primary-link href="/projects" class="mt-4">Go Back</x-primary-link>
+                    @include('projects.activity.card')
                 </div>
             </div>
         </main>
