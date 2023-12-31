@@ -20,4 +20,12 @@ class Activity extends Model
     {
         return $this->morphTo();
     }
+
+    /**
+     * Get the user who triggered the activity.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
