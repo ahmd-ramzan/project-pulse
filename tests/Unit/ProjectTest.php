@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Facades\Tests\Setup\ProjectFactory;
 use Tests\TestCase;
 
 class ProjectTest extends TestCase
@@ -37,5 +38,15 @@ class ProjectTest extends TestCase
         $this->assertCount(1, $project->tasks);
 
         $this->assertTrue($project->tasks->contains($task));
+    }
+
+    /** @test */
+    public function it_can_invite_a_user()
+    {
+        $project = ProjectFactory::create();
+
+        $project->invite($user = User::factory()->create());
+
+        $this->assertTrue($project->members->contains($user));
     }
 }

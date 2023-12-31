@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -43,8 +44,28 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function projects()
+    /**
+     * User can have many projects
+     * @return HasMany
+     */
+    public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'owner_id')->latest('updated_at');
+    }
+
+    public function accessibleProjects()
+    {
+        return Project::where('owner_id', $this->id)
+            ->orWhereHas('members', fn ($q) => $q->where('user_id', $this->id))
+            ->get();
+
+        /* beginner level approach */
+
+        /*$projectsCreated = $this->projects;
+
+        $ids = \DB::table('project_members')->where('user_id', $this->id)->pluck('project_id');
+        $projectSharedWith = Project::find($ids);
+
+        return $projectsCreated->merge($projectSharedWith);*/
     }
 }
