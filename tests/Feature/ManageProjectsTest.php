@@ -7,7 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\Setup\ProjectFactory;
+use Facades\Tests\Setup\ProjectFactory;
 use Tests\TestCase;
 
 class ManageProjectsTest extends TestCase
@@ -55,6 +55,32 @@ class ManageProjectsTest extends TestCase
     }
 
     /** @test */
+    function unauthorized_users_cannot_delete_projects()
+    {
+        $project = ProjectFactory::create();
+
+        $this->delete($project->path())
+            ->assertRedirect('/login');
+
+        $this->signIn();
+
+        $this->delete($project->path())
+            ->assertStatus(403);
+    }
+
+    /** @test */
+    function a_user_can_delete_a_project()
+    {
+        $project = ProjectFactory::create();
+
+        $this->actingAs($project->owner)
+            ->delete($project->path())
+            ->assertRedirect('/projects');
+
+        $this->assertDatabaseMissing('projects', $project->only('id'));
+    }
+
+    /** @test */
     public function a_project_requires_a_title()
     {
         $this->actingAs(User::factory()->create());
@@ -77,7 +103,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_can_view_their_project()
     {
-        $project = app(ProjectFactory::class)->create();
+        $project = ProjectFactory::create();
 
         $this->actingAs($project->owner)
             ->get($project->path())

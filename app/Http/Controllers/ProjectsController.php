@@ -50,6 +50,20 @@ class ProjectsController extends Controller
         return redirect($project->path());
     }
 
+    /**
+     * Destroy the project.
+     *
+     * @param  Project $project
+     */
+    public function destroy(Project $project)
+    {
+        $this->authorize('update', $project);
+
+        $project->delete();
+
+        return redirect('/projects');
+    }
+
     public function show(Project $project)
     {
         $this->authorize('update', $project);

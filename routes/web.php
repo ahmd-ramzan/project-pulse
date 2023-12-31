@@ -27,14 +27,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     # projects
-    Route::controller(ProjectsController::class)->group(function () {
-        Route::get('/projects', 'index');
-        Route::get('/projects/create', 'create');
-        Route::get('/projects/{project}/edit', 'edit');
-        Route::get('/projects/{project}', 'show');
-        Route::post('/projects', 'store');
-        Route::patch('/projects/{project}', 'update');
-    });
+    Route::resource('projects', ProjectsController::class);
 
     # project tasks
     Route::post('/projects/{project}/tasks', [ProjectTasksController::class, 'store']);
