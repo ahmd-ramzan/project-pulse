@@ -5,6 +5,21 @@
                 <a href="/projects" class="text-grey text-sm font-normal no-underline">My Projects</a>
                 / {{ $project->title }}
             </p>
+
+            <div class="flex items-center">
+                @foreach ($project->members as $member)
+                    <img
+                        src="{{ gravatar_url($member->email) }}"
+                        alt="{{ $member->name }}'s avatar"
+                        class="rounded-full w-8 mr-2">
+                @endforeach
+
+                <img
+                    src="{{ gravatar_url($project->owner->email) }}"
+                    alt="{{ $project->owner->name }}'s avatar"
+                    class="rounded-full w-8 mr-2">
+            </div>
+
             <x-primary-link href="{{ $project->path().'/edit' }}" class="button bg-blue">Edit</x-primary-link>
         </div>
     </x-slot>
