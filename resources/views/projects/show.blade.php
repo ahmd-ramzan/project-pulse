@@ -69,17 +69,13 @@
                 </div>
                 <div class="lg:w-1/4 px-3">
                     @include('projects.card')
-                    <x-primary-link href="/projects" class="mt-4">Go Back</x-primary-link>
                     @include('projects.activity.card')
+
+                    @can('manage', $project)
+                        @include('projects.invite')
+                    @endcan
                 </div>
             </div>
         </main>
     </div>
-    @if($errors->any())
-        <div class="field mt-6">
-            @foreach($errors->all() as $error)
-                <li class="text-sm text-red-500">{{ $error }}</li>
-            @endforeach
-        </div>
-    @endif
 </x-app-layout>

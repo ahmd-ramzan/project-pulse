@@ -16,9 +16,20 @@ class InvitationsTest extends TestCase
     /** @test */
     public function non_owners_may_not_invite_users()
     {
-        $this->actingAs(User::factory()->create())
-            ->post(ProjectFactory::create()->path() . '/invitations')
-            ->assertStatus(403);
+        $project = ProjectFactory::create();
+        $user = User::factory()->create();
+
+        $assertInvitationForbidden = function () use ($user, $project) {
+            $this->actingAs($user)
+                ->post($project->path() . '/invitations')
+                ->assertStatus(403);
+        };
+
+        $assertInvitationForbidden();
+
+        $project->invite($user);
+
+        $assertInvitationForbidden();
     }
 
     /** @test */
@@ -44,7 +55,7 @@ class InvitationsTest extends TestCase
             'email' => 'nouser@gmail.com'
         ])->assertSessionHasErrors([
             'email' => 'The user you are inviting must have a project pulse account.'
-        ]);
+        ], null, 'invitations');
     }
 
     /** @test */
