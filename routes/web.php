@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProjectInvitationsController;
 use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\ProjectTasksController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     # projects
     Route::resource('projects', ProjectsController::class);
+
+    #invitations
+    Route::post('/projects/{project}/invitations', [ProjectInvitationsController::class, 'store']);
 
     # project tasks
     Route::post('/projects/{project}/tasks', [ProjectTasksController::class, 'store']);
